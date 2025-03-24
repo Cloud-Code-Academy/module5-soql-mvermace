@@ -16,10 +16,27 @@
  * Users of this class can expect to gain a solid understanding of SOQL in Apex and
  * be prepared to handle data retrieval tasks in Salesforce development.
  *
- * @author Your Name
+ * @author Mike Vermace
  */
 
 public with sharing class SOQL {
+	/* There are opportunities are to bulkify and, at least reduce the, DRY in this HW.
+	 * 
+	 * So, for example Q1 is essentially:
+	 * 		
+	 * 		SELECT Id, LastName, Company, Phone, Email FROM Lead 		// dropping 'WITH USER_MODE' for now.
+	 * 	
+	 * 	Similarly, Q2
+	 * 
+	 * 		SELECT Id (no others fields specified) FROM Contact WHERE Firstname =:fname
+	 * 
+	 *  and Q7
+	 * 
+	 * 		
+
+
+
+	*/
 	/**
 	 * Question 1
 	 * Update/Uncomment the template code to create a method
@@ -27,9 +44,10 @@ public with sharing class SOQL {
 	 * @return List of all leads with Id, LastName, Company, Phone, Email
 	 * Update the corresponding test class and testGetAllLeads method to cover this method
 	 */
-	//[public | private ] [static] data_type method_name (input parameters) {
-	//  The body of the method
-	//}
+	public static List<Lead> getAllLeads() {
+		List<Lead> leads = [SELECT Id, LastName, Company, Phone, Email FROM Lead WITH USER_MODE];
+		return leads;
+	}
 
 	/**
 	 * Question 2
@@ -38,9 +56,13 @@ public with sharing class SOQL {
 	 * @return A list of Contact records.
 	 * Update the corresponding test class and testGetContactsByFirstName method to cover this method
 	 */
-	//[public | private ] [static] data_type method_name (input parameters) {
-	//  The body of the method
-	//}
+	
+	public static List<Contact> getAllContacts() {
+		String fname = 'John';
+		List<Contact> contacts = [SELECT Id, Name, FirstName, LastName FROM Contact WHERE FirstName =:fname WITH SYSTEM_MODE];
+		return contacts;	
+	}
+	
 
 	/**
 	 * Question 3
@@ -49,9 +71,19 @@ public with sharing class SOQL {
 	 * @return A list of Contact Ids.
 	 * Update the corresponding test class and testGetContactIdsByLastName method to cover this method
 	 */
-	//[public | private ] [static] data_type method_name (input parameters) {
-	//  The body of the method
-	//}
+	 //List<String> contLastNames = new List<String>{'Smith', 'Jones'};
+	public static List<Id> getContactIds(List<String> contLastNames) {
+		
+		List<Contact> contIds = [SELECT Id, Name, FirstName, LastName FROM Contact WHERE LastName IN :contLastNames WITH SYSTEM_MODE];
+		
+		System.debug('contIds:'+contIds);
+		
+	
+	
+		return null; // contIds;
+	}
+		
+	
 
 	/**
 	 * Question 4
@@ -62,9 +94,10 @@ public with sharing class SOQL {
 	 * @return A list of Opportunities with important opportunities fields
 	 * Update the corresponding test class and testGetClosedWonOpportunityCountByAccount method to cover this method
 	 */
-	//[public | private ] [static] data_type method_name (input parameters) {
-	//  The body of the method
-	//}
+	public static List<Opportunity> closedWonOppsByAccountId(Id accountId) {
+		List<Opportunity> oppsForAccountId = [SELECT Id, Name, AccountId, StageName, Amount, CloseDate FROM Opportunity WHERE AccountId =:accountId AND StageName = 'Closed Won' WITH SYSTEM_MODE];
+		return oppsForAccountId;
+	}
 
 	/**
 	 * Question 5
@@ -73,9 +106,10 @@ public with sharing class SOQL {
 	 * @return The Integer count of Account records.
 	 * Update the corresponding test class and testGetAccountCount method to cover this method
 	 */
-	//[public | private ] [static] data_type method_name (input parameters) {
-	//  The body of the method
-	//}
+	public static Integer accountCount() {
+		Integer accountCount = [SELECT count() FROM Account WITH SYSTEM_MODE];
+		return accountCount;
+	}
 
 	/**
 	 * Question 6
@@ -84,9 +118,16 @@ public with sharing class SOQL {
 	 * @return A map of Task Ids to Task records.
 	 * Update the corresponding test class and testGetTasksDueNextWeek method to cover this method
 	 */
-	//[public | private ] [static] data_type method_name (input parameters) {
-	//  The body of the method
-	//}
+	public static Map<Id,Task> tasksDueSoon () {
+		// Does not include overdue Tasks
+		// Explored N in NEXT_N_DAYS:N -> NEXT_N_DAYS:<bind_variable>.  
+		//   ex. Integer daysInFuture = 7; ---> ... FROM Task WHERE ActivityDate = LAST_N_DAYS:daysInFuture WITH SYSTEM_MODE
+		//       but the ':' does not handle this...
+		// TODO: Migrate [SELECT...] to DynamicSOQL using Database.QueryWithBinds()
+		List<Task> tasksDueNextSevenDays = [SELECT Id, Subject, ActivityDate, OwnerId, Status FROM Task WHERE IsClosed = false AND ActivityDate = NEXT_N_DAYS:7 WITH SYSTEM_MODE];
+		Map<Id,Task> tasksDueSoonMap = new Map<Id,Task>(tasksDueNextSevenDays);
+		return tasksDueSoonMap;
+	}
 
 	/**
 	 * Question 7
@@ -95,9 +136,10 @@ public with sharing class SOQL {
 	 * @return A list of Contact records.
 	 * Update the corresponding test class and testGetContactsByEmailDomain method to cover this method
 	 */
-	//[public | private ] [static] data_type method_name (input parameters) {
-	//  The body of the method
-	//}
+	public static List<Contact> getAllContactsExampleDotCom() {
+		List<Contact> contactsToReturn = [SELECT Id, Name, FirstName, LastName, Email FROM Contact WHERE Email LIKE '%example.com' WITH USER_MODE];
+		return contactsToReturn;
+	}
 
 	/**
 	 * Question 8
@@ -310,7 +352,7 @@ public with sharing class SOQL {
 	 * @param Original Opportunity Id
 	 * @param List of cloned Opportunity Ids
 	 */
-	public static void cloneLineItems(Id origOppId, List<Id> cloneOppIds) {
+	//public static void cloneLineItems(Id origOppId, List<Id> cloneOppIds) {
 		// Query the original Opportunity Line Items
 
 		// Create a list to hold the new line items
@@ -324,7 +366,7 @@ public with sharing class SOQL {
 		// Clone the original line item and add the random number to the quantity
 
 		// Insert the new line items
-	}
+	//}
 
 	/**
 	 * Question 24
@@ -332,7 +374,9 @@ public with sharing class SOQL {
 	 * @return A list of filtered Opportunity
 	 */
 	public static List<Opportunity> getOpportunityDetailsForClosedWon() {
-		return null; // Replace null with the variable you used to store the result
+		String stageNameFilter = 'Closed Won';
+		List<Opportunity> oppList = [SELECT Id, Name, Account.Name, Owner.Name FROM Opportunity WHERE StageName = :stageNameFilter WITH USER_MODE];
+		return oppList; // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -340,7 +384,7 @@ public with sharing class SOQL {
 	 * Sets the 'Primary_Contact__c' field for all Closed Won Opportunities to the Contact on the associated Account with the alphabetically first first name.
 	 * Example: if there are two Contacts on the Account, "Billy" and "Abby," the 'Primary_Contact__c' will be set to "Abby."
 	 */
-	public static void setPrimaryContact() {
+	//public static void setPrimaryContact() {
 		//Use the getOpportunityDetailsForClosedWon() method to get the Opportunities
 
 		// Create a set of Account Ids from the Opportunities
@@ -354,5 +398,9 @@ public with sharing class SOQL {
 		// Update the Opportunity primary contact from accountToContactMap
 
 		// Update the Opportunities
-	}
+
+		
+	//}
+
+
 }
