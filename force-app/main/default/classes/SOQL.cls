@@ -149,7 +149,19 @@ public with sharing class SOQL {
 	 * @return A list of Opportunity records.
 	 */
 	public static List<Opportunity> getOpportunitiesByNameKeyword(String keyword) {
-		return null; // Replace null with the variable you used to store the result
+		//Ready 'keyword' for Like clause
+		String likeStr = '%' + keyword + '%';
+		
+		//Build Map<String, Object> to place keyword in bind
+		Map<String, Object> oppBinds = new Map<String, Object>{'oppName' => likeStr };
+		
+		//Build query
+		String queryString = 'SELECT Id, Name, StageName, CloseDate, AccountId FROM Opportunity WHERE Name LIKE :oppName';
+		
+		//Build Opportunity List with Database.queryWithBinds()
+		List<Opportunity> oppWithKeyword = Database.queryWithBinds(queryString, oppBinds, AccessLevel.SYSTEM_MODE);
+		
+		return oppWithKeyword; // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -158,7 +170,16 @@ public with sharing class SOQL {
 	 * @return A list of Case records.
 	 */
 	public static List<Case> getFilterCaseOrigins() {
-		return null; // Replace null with the variable you used to store the result
+		Map<String, Object> caseBinds = new Map<String, Object>{
+			'webName' => 'Web',
+			'emailName' => 'Email' 
+		};
+		
+		String queryString = 'SELECT Id, Subject, Origin FROM Case WHERE Origin != :webName AND Origin != :emailName AND Origin != Null';
+		
+		List<Case> casesToReturn = Database.queryWithBinds(queryString, caseBinds, AccessLevel.SYSTEM_MODE);
+		
+		return casesToReturn; // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -171,9 +192,21 @@ public with sharing class SOQL {
 	 * @return A list of Lead records.
 	 * Update the corresponding test class and testGetLeadsBySourceOrTitle method to cover this method
 	 */
-	//[public | private ] [static] data_type method_name (input parameters) {
-	//  The body of the method
-	//}
+	public static List<Lead> selectedLeads(String sourceString, String titleString) {
+		String titleStr = '%' + titleString + '%';
+		
+		//Build Map<String, Object> to place keyword in bind
+		Map<String, Object> leadBinds = new Map<String, Object>{
+			'leadSource' => sourceString,
+			'leadTitle' => titleStr
+		};
+		
+		//Build query
+		String queryString = 'SELECT Id, Name, FirstName, LastName, LeadSource, Company, Phone, Email, Title FROM Lead WHERE LeadSource = :leadSource OR Title LIKE :leadTitle'; 
+		List<Lead> leadsToReturn = Database.queryWithBinds(queryString, leadBinds, AccessLevel.SYSTEM_MODE);
+
+		return leadsToReturn;
+	}
 
 	/**
 	 * Question 11
@@ -184,15 +217,16 @@ public with sharing class SOQL {
 	 */
 	public static List<String> getContactNamesByAccount(Id accountId) {
 		// Create a list to hold the Contact LastNames
-
+		List<String> contactLastNames = new List<String>();
 		// Query the Contacts
+		List<Contact> contacts = [SELECT Id, FirstName, LastName, AccountId FROM Contact WHERE AccountId = :accountId WITH SYSTEM_MODE];
 		// Loop through each Contact and add the LastName to the list
-		//for () {
-		//
-		//}
-
+		for (Contact cont : contacts) {
+			String lastName = cont.LastName;
+			contactLastNames.add(lastName);
+		}
 		// Return the list of Contact LastNames
-		return null; // Replace null with the variable you used to store the result
+		return contactLastNames; // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -204,7 +238,7 @@ public with sharing class SOQL {
 	 */
 	public static Decimal getTotalRevenueByStage(String stage) {
 		// Use AggregateQuery to get the total revenue
-
+		
 		// Return the total revenue
 		return null; // Replace null with the variable you used to store the result
 	}

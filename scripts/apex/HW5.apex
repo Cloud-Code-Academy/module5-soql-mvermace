@@ -67,3 +67,41 @@ insert new List<Task>{ testTask1, testTask2, testTask3 };
 // Call the method to test
 Map<Id, Task> tasks = SOQL.tasksDueSoon(); //Replace null with your method call from SOQL class
 System.debug(tasks);
+
+// Q8
+string keyword = 'keyword';
+String likeStr = '\'%' + keyword + '%\'';
+System.debug(likeStr);
+
+Account testAccount = new Account(Name = 'Test Account');
+insert testAccount;
+
+Opportunity testOpportunity1 = new Opportunity(
+    Name = 'Test Opportunity 1',
+    StageName = 'Prospecting',
+    CloseDate = Date.today(),
+    AccountId = testAccount.Id
+);
+Opportunity testOpportunity2 = new Opportunity(
+    Name = 'Keyword Opportunity',
+    StageName = 'Prospecting',
+    CloseDate = Date.today(),
+    AccountId = testAccount.Id
+);
+Opportunity testOpportunity3 = new Opportunity(
+    Name = 'Test Opportunity 3',
+    StageName = 'Prospecting',
+    CloseDate = Date.today(),
+    AccountId = testAccount.Id
+);
+insert new List<Opportunity>{ testOpportunity1, testOpportunity2, testOpportunity3 };
+
+String Keyword = 'Keyword';
+String likeStr = '\'%' + Keyword + '%\'';
+System.debug(likeStr);
+//List<Opportunity> oppWithKeyword = [SELECT Id, Name, StageName, CloseDate, AccountId FROM Opportunity WHERE Name LIKE '%Keyword%'];
+//List<Opportunity> oppWithKeyword = SOQL.getOpportunitiesByNameKeyword('Keyword');
+// Call the method to test
+List<Opportunity> opportunities = SOQL.getOpportunitiesByNameKeyword('Keyword');
+System.debug(opportunities.size());
+//System.debug(opportunities.size().tostring());
