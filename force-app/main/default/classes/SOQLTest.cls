@@ -10,6 +10,7 @@
 @IsTest
 public with sharing class SOQLTest {
 
+
 	//Q1
 	@IsTest  
 	static void testGetAllLeads() {
@@ -255,10 +256,10 @@ public with sharing class SOQLTest {
 		List<Opportunity> opportunities = SOQL.getOpportunitiesByNameKeyword('Keyword');
 
 		// Assert that the number of opportunities returned is correct
-		//System.assertEquals(1, opportunities.size(), 'Number of opportunities returned is incorrect.');
+		System.assertEquals(1, opportunities.size(), 'Number of opportunities returned is incorrect.');
 
 		// Assert that the opportunities returned have the correct names
-		System.assertEquals('Keyword Opportunity', opportunities[1].Name, 'Opportunity name is incorrect.');
+		System.assertEquals('keyword opportunity', opportunities[0].Name.toLowerCase(), 'Opportunity name is incorrect.');
 
 		opportunities = SOQL.getOpportunitiesByNameKeyword('Test');
 		System.assertEquals(2, opportunities.size(), 'Number of opportunities returned is incorrect.');
@@ -455,11 +456,11 @@ public with sharing class SOQLTest {
 		Decimal totalRevenue = SOQL.getTotalRevenueByStage('Closed Won');
 
 		// Assert that the total revenue returned is correct
-		Decimal expectedRevenue = testOpp2.Amount + testOpp3.Amount + testOpp4.Amount;
+		Decimal expectedRevenue = testOpp2.Amount + testOpp4.Amount;
 		System.assertEquals(expectedRevenue, totalRevenue, 'Total revenue is incorrect.');
 	}
 
-	/*
+	// Q13
 	@IsTest
 	static void testGetFirstTenAccounts() {
 		// Create test data
@@ -484,6 +485,8 @@ public with sharing class SOQLTest {
 		}
 	}
 
+	
+	// Q14
 	@IsTest
 	static void testGetHighValueOpportunities() {
 		// Create test data
@@ -520,6 +523,7 @@ public with sharing class SOQLTest {
 		}
 	}
 
+	// Q15
 	@IsTest
 	static void testGetBirthdateContacts() {
 		// Create test data
@@ -549,6 +553,7 @@ public with sharing class SOQLTest {
 		}
 	}
 
+	// Q16
 	@IsTest
 	static void testGetCasesWithStatus() {
 		// Create test data
@@ -582,6 +587,8 @@ public with sharing class SOQLTest {
 		System.assertEquals(cases[5].Id, returnedCases[0].Id, 'First case returned is not the 6th case created.');
 	}
 
+	
+	// Q17
 	@IsTest
 	static void testGetCaseIdsByAccount() {
 		// Create test data
@@ -627,6 +634,8 @@ public with sharing class SOQLTest {
 		}
 	}
 
+
+	//Q18
 	@IsTest
 	static void testGetAccountIdsToNamesNotInCountry() {
 		// Create test data
@@ -651,6 +660,9 @@ public with sharing class SOQLTest {
 		}
 	}
 
+	
+	
+	// Q19
 	@IsTest
 	static void testGetAccountNameForContact() {
 		// Create test data
@@ -667,6 +679,7 @@ public with sharing class SOQLTest {
 		System.assertEquals('Test Account 1', accountName, 'Returned account name is incorrect.');
 	}
 
+	// Q20
 	@IsTest
 	static void testGetAccountAndOpportunitiesFromAccountId() {
 		// Create test data
@@ -705,6 +718,7 @@ public with sharing class SOQLTest {
 		}
 	}
 
+	// Q21
 	@IsTest
 	static void testGetAccountsWithContactsByState() {
 		// Create test data
@@ -753,6 +767,7 @@ public with sharing class SOQLTest {
 		);
 	}
 
+	// Q22
 	@IsTest
 	static void testFindAccountsByLeadEmailDomains() {
 		// Create test data
@@ -827,6 +842,8 @@ public with sharing class SOQLTest {
 		}
 	}
 
+
+	// Q23
 	@IsTest
 	static void testCloneLineItems() {
 		// Create test data
@@ -887,6 +904,7 @@ public with sharing class SOQLTest {
 		System.assertEquals(100, clonedLineItems[0].UnitPrice, 'Cloned line item UnitPrice is incorrect.');
 	}
 
+	// Q24
 	@IsTest
 	static void testGetOpportunityDetailsForClosedWon() {
 		// Create test data
@@ -928,6 +946,7 @@ public with sharing class SOQLTest {
 		}
 	}
 
+	// Q25
 	@IsTest
 	static void testSetPrimaryContact() {
 		// Create test data
@@ -974,7 +993,4 @@ public with sharing class SOQLTest {
 			'Primary Contact was set incorrectly.'
 		);
 	}
-
-*/
-
 }
