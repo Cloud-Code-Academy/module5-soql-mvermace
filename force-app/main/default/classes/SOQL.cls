@@ -32,7 +32,10 @@ public with sharing class SOQL {
 	 * 
 	 *  and Q7
 	 * 
-	 * 		
+	 * 	....decide to skip this extra work for now...
+	 * 
+	 * IDK when/if I added the PDM Extension but applied some of the Database.query() and Database.queryWithBinds() work in this assignment.
+	 * 
 
 
 
