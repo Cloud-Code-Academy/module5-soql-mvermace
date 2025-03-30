@@ -444,19 +444,17 @@ public with sharing class SOQL {
 		
 		// Use the getOpportunityDetailsForClosedWon() method to get the Opportunities
 		List<Opportunity> oppList = getOpportunityDetailsForClosedWon();
-		System.debug(JSON.serializePretty(oppList));
-		
+				
 		// Create a set of Account Ids from the Opportunities
+		// Is there a 'shorthand' contructor method to do this?
 		Set<Id> acctIds = new Set<Id>();
 		for (Opportunity opp : oppList) {
 			acctIds.add(opp.AccountId);
 		}
-		System.debug(JSON.serializePretty(acctIds));
-		
+				
 		// Query the Contacts
 		List<Contact> contList = [SELECT Id, FirstName, LastName, AccountId FROM Contact WHERE AccountId IN :acctIds ORDER BY FirstName, Account.Name];
-		System.debug(JSON.serializePretty(contList));
-
+		
 		// Loop through each Contact and add the Account Id and Contact to the map
 		Map<Id,Id> accountToContactMap = new Map<Id,Id>();
 		for (Contact cont : contList ) {
@@ -465,7 +463,6 @@ public with sharing class SOQL {
 				accountToContactMap.put( cont.AccountId, cont.Id  );
 			}
 		}
-		System.debug('accountToContactMap: '+accountToContactMap);
 
 		// Loop through each Opportunity
 		for (Opportunity opp : oppList ) {
