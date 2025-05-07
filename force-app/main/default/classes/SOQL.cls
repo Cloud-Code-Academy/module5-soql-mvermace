@@ -48,8 +48,7 @@ public with sharing class SOQL {
 	 * Update the corresponding test class and testGetAllLeads method to cover this method
 	 */
 	public static List<Lead> getAllLeads() {
-		List<Lead> leads = [SELECT Id, LastName, Company, Phone, Email FROM Lead WITH USER_MODE];
-		return leads;
+		return [SELECT Id, LastName, Company, Phone, Email FROM Lead WITH USER_MODE];
 	}
 
 	/**
@@ -62,8 +61,7 @@ public with sharing class SOQL {
 	
 	public static List<Contact> getAllContacts() {
 		String fname = 'John';
-		List<Contact> contacts = [SELECT Id, Name, FirstName, LastName FROM Contact WHERE FirstName =:fname WITH SYSTEM_MODE];
-		return contacts;	
+		return [SELECT Id, Name, FirstName, LastName FROM Contact WHERE FirstName =:fname WITH SYSTEM_MODE];	
 	}
 	
 
@@ -74,14 +72,17 @@ public with sharing class SOQL {
 	 * @return A list of Contact Ids.
 	 * Update the corresponding test class and testGetContactIdsByLastName method to cover this method
 	 */
-	 //List<String> contLastNames = new List<String>{'Smith', 'Jones'};
-	public static List<Id> getContactIds(List<String> contLastNames) {
-		List<Contact> contIds = [SELECT Id, Name, FirstName, LastName FROM Contact WHERE LastName IN :contLastNames WITH SYSTEM_MODE];
-		return null; // contIds;
+	public static List<Id> getContactIds() {
+		List<String> contLastNames = new List<String>{'Smith', 'Jones'};  
+		List<Contact> contList = [SELECT Id, Name, FirstName, LastName FROM Contact WHERE LastName IN :contLastNames WITH SYSTEM_MODE];
+		// Lines 79 thru 82. Is there a better way to 'cast' the Ids from contList to idList?
+		List<Id> idList = new List<Id>();
+		for (Contact conts : contList) {
+			idList.add(conts.Id);
+		}
+		return idList; // contIds;
 	}
 		
-	
-
 	/**
 	 * Question 4
 	 * Update/Uncomment the template code to create a method
@@ -92,8 +93,7 @@ public with sharing class SOQL {
 	 * Update the corresponding test class and testGetClosedWonOpportunityCountByAccount method to cover this method
 	 */
 	public static List<Opportunity> closedWonOppsByAccountId(Id accountId) {
-		List<Opportunity> oppsForAccountId = [SELECT Id, Name, AccountId, StageName, Amount, CloseDate FROM Opportunity WHERE AccountId =:accountId AND StageName = 'Closed Won' WITH SYSTEM_MODE];
-		return oppsForAccountId;
+		return [SELECT Id, Name, AccountId, StageName, Amount, CloseDate FROM Opportunity WHERE AccountId =:accountId AND StageName = 'Closed Won' WITH SYSTEM_MODE];
 	}
 
 	/**
@@ -104,8 +104,7 @@ public with sharing class SOQL {
 	 * Update the corresponding test class and testGetAccountCount method to cover this method
 	 */
 	public static Integer accountCount() {
-		Integer accountCount = [SELECT count() FROM Account WITH SYSTEM_MODE];
-		return accountCount;
+		return [SELECT count() FROM Account WITH SYSTEM_MODE];
 	}
 
 	/**
@@ -148,7 +147,6 @@ public with sharing class SOQL {
 	public static List<Opportunity> getOpportunitiesByNameKeyword(String keyword) {
 		//Ready 'keyword' for Like clause
 		String likeStr = '%' + keyword + '%';
-		System.debug('likeStr'+likeStr);
 		//Build Map<String, Object> to place keyword in bind
 		Map<String, Object> oppBinds = new Map<String, Object>{'oppName' => likeStr };
 		
@@ -157,7 +155,6 @@ public with sharing class SOQL {
 		
 		//Build Opportunity List with Database.queryWithBinds()
 		List<Opportunity> oppWithKeyword = Database.queryWithBinds(queryString, oppBinds, AccessLevel.SYSTEM_MODE);
-		system.debug('oppWithKeyword'+JSON.serializePretty(oppWithKeyword));
 		return oppWithKeyword; // Replace null with the variable you used to store the result
 	}
 
@@ -171,12 +168,8 @@ public with sharing class SOQL {
 			'webName' => 'Web',
 			'emailName' => 'Email' 
 		};
-		
 		String queryString = 'SELECT Id, Subject, Origin FROM Case WHERE Origin != :webName AND Origin != :emailName AND Origin != Null';
-		
-		List<Case> casesToReturn = Database.queryWithBinds(queryString, caseBinds, AccessLevel.SYSTEM_MODE);
-		
-		return casesToReturn; // Replace null with the variable you used to store the result
+		return Database.queryWithBinds(queryString, caseBinds, AccessLevel.SYSTEM_MODE); // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -191,18 +184,14 @@ public with sharing class SOQL {
 	 */
 	public static List<Lead> selectedLeads(String sourceString, String titleString) {
 		String titleStr = '%' + titleString + '%';
-		
 		//Build Map<String, Object> to place keyword in bind
 		Map<String, Object> leadBinds = new Map<String, Object>{
 			'leadSource' => sourceString,
 			'leadTitle' => titleStr
 		};
-		
 		//Build query
 		String queryString = 'SELECT Id, Name, FirstName, LastName, LeadSource, Company, Phone, Email, Title FROM Lead WHERE LeadSource = :leadSource OR Title LIKE :leadTitle'; 
-		List<Lead> leadsToReturn = Database.queryWithBinds(queryString, leadBinds, AccessLevel.SYSTEM_MODE);
-
-		return leadsToReturn;
+		return Database.queryWithBinds(queryString, leadBinds, AccessLevel.SYSTEM_MODE);
 	}
 
 	/**
@@ -236,9 +225,8 @@ public with sharing class SOQL {
 	public static Decimal getTotalRevenueByStage(String stage) {
 		// Use AggregateQuery to get the total revenue
 		List<AggregateResult> resultList = [SELECT SUM(Amount) sumAmount FROM Opportunity WHERE StageName = :stage WITH SYSTEM_MODE]; 
-		Decimal decSum = Decimal.valueOf(Integer.valueOf(resultList[0].get('sumAmount')));
 		// Return the total revenue
-		return decSum; // Replace null with the variable you used to store the result
+		return Decimal.valueOf(Integer.valueOf(resultList[0].get('sumAmount'))); // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -247,8 +235,7 @@ public with sharing class SOQL {
 	 * @return A list of the first 10 Accounts ordered by Name.
 	 */
 	public static List<Account> getFirstTenAccounts() {
-		List<Account> acctsToReturn = [SELECT Id, Name FROM Account ORDER BY Name LIMIT 10];
-		return acctsToReturn; // Replace null with the variable you used to store the result
+		return [SELECT Id, Name FROM Account ORDER BY Name LIMIT 10]; // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -257,8 +244,8 @@ public with sharing class SOQL {
 	 * @return A list of Opportunities with an Amount greater than 100,000, ordered by CloseDate, and limited to 5 records.
 	 */
 	public static List<Opportunity> getHighValueOpportunities() {
-		List<Opportunity> oppList = [SELECT Id, Name, AccountId, Amount, StageName, CloseDate FROM Opportunity WHERE Amount > 100000 ORDER BY CloseDate LIMIT 5];
-		return oppList; // Replace null with the variable you used to store the result
+	//	List<Opportunity> oppList = [SELECT Id, Name, AccountId, Amount, StageName, CloseDate FROM Opportunity WHERE Amount > 100000 ORDER BY CloseDate LIMIT 5];
+		return [SELECT Id, Name, AccountId, Amount, StageName, CloseDate FROM Opportunity WHERE Amount > 100000 ORDER BY CloseDate LIMIT 5]; // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -267,8 +254,7 @@ public with sharing class SOQL {
 	 * @return A list of Contacts
 	 */
 	public static List<Contact> getBirthdateContacts() {
-		List<Contact> contactsToReturn = [SELECT Id, LastName, Birthdate FROM Contact ORDER BY Birthdate DESC LIMIT 3];
-		return contactsToReturn; // Replace null with the variable you used to store the result
+		return [SELECT Id, LastName, Birthdate FROM Contact ORDER BY Birthdate DESC LIMIT 3]; // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -277,8 +263,7 @@ public with sharing class SOQL {
 	 * @return A list of Cases
 	 */
 	public static List<Case> getCasesWithStatus() {
-		List<Case> casesToReturn = [SELECT Id, Subject, Status, CreatedDate FROM Case WHERE Status = 'Open' ORDER BY CreatedDate LIMIT 10 OFFSET 5];
-		return casesToReturn; // Replace null with the variable you used to store the result
+		return [SELECT Id, Subject, Status, CreatedDate FROM Case WHERE Status = 'Open' ORDER BY CreatedDate LIMIT 10 OFFSET 5]; // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -357,8 +342,7 @@ public with sharing class SOQL {
 		// Store the Account's BillingState
 		String billingState = acct[0].BillingState;
 		// Query the Contacts
-		List<Contact> contToReturn = [SELECT Id, FirstName, LastName, MailingState FROM Contact WHERE MailingState =:billingState WITH SYSTEM_MODE];
-		return contToReturn; // Replace null with the variable you used to store the result
+		return [SELECT Id, FirstName, LastName, MailingState FROM Contact WHERE MailingState =:billingState WITH SYSTEM_MODE]; // Replace null with the variable you used to store the result
 	}
 
 	/**
@@ -382,8 +366,7 @@ public with sharing class SOQL {
 				}
 			}
 		}
-		List<Account> acct = [SELECT Id, Name, website FROM Account WHERE website IN :emailDoms WITH SYSTEM_MODE]; // Replace null with the variable you used to store the result
-		return acct;
+		return [SELECT Id, Name, website FROM Account WHERE website IN :emailDoms WITH SYSTEM_MODE];
 	}
 
 	/**
@@ -431,8 +414,7 @@ public with sharing class SOQL {
 	 */
 	public static List<Opportunity> getOpportunityDetailsForClosedWon() {
 		String stageNameFilter = 'Closed Won';  //Maybe safer to hard-code 'Closed Won'...
-		List<Opportunity> oppList = [SELECT Id, Name, Account.Name, Owner.Name, Primary_Contact__c FROM Opportunity WHERE StageName = :stageNameFilter WITH SYSTEM_MODE];
-		return oppList; // Replace null with the variable you used to store the result
+		return [SELECT Id, Name, Account.Name, Owner.Name, Primary_Contact__c FROM Opportunity WHERE StageName = :stageNameFilter WITH SYSTEM_MODE]; // Replace null with the variable you used to store the result
 	}
 
 	/**

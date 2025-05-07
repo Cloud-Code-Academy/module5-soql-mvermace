@@ -74,25 +74,25 @@ public with sharing class SOQLTest {
 		}
 	}
 
-	// //Q3
-	// @IsTest
-	// static void testGetContactIdsByLastName() {
-	// 	// Create test data
-	// 	Contact testContact1 = new Contact(FirstName = 'John', LastName = 'Smith');
-	// 	Contact testContact2 = new Contact(FirstName = 'Jane', LastName = 'Jones');
-	// 	Contact testContact3 = new Contact(FirstName = 'Jack', LastName = 'Doe');
-	// 	insert new List<Contact>{ testContact1, testContact2, testContact3 };
+	//Q3
+	@IsTest
+	static void testGetContactIdsByLastName() {
+		// Create test data
+		Contact testContact1 = new Contact(FirstName = 'John', LastName = 'Smith');
+		Contact testContact2 = new Contact(FirstName = 'Jane', LastName = 'Jones');
+		Contact testContact3 = new Contact(FirstName = 'Jack', LastName = 'Doe');
+		insert new List<Contact>{ testContact1, testContact2, testContact3 };
+		
+		// Call the method to test
+		List<Id> contactIds = SOQL.getContactIds();
 
-	// 	// Call the method to test
-	// 	List<Id> contactIds = SOQL.getContactIds()
+		// Assert that the number of contact IDs returned is correct
+		System.assertEquals(2, contactIds.size(), 'Number of contact IDs returned is incorrect.');
 
-	// 	// Assert that the number of contact IDs returned is correct
-	// 	System.assertEquals(2, contactIds.size(), 'Number of contact IDs returned is incorrect.');
-
-	// 	// Assert that the contact IDs returned are correct
-	// 	Set<Id> expectedContactIds = new Set<Id>{ testContact1.Id, testContact2.Id };
-	// 	System.assertEquals(expectedContactIds, new Set<Id>(contactIds), 'Returned contact IDs are incorrect.');
-	// }
+		// Assert that the contact IDs returned are correct
+		Set<Id> expectedContactIds = new Set<Id>{ testContact1.Id, testContact2.Id };
+		System.assertEquals(expectedContactIds, new Set<Id>(contactIds), 'Returned contact IDs are incorrect.');
+	}
 
 
 	//Q4

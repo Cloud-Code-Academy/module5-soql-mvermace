@@ -9,10 +9,10 @@ string tempvar = 'Mike Vermace';
 System.debug('Hello World!');
 System.debug('My name is ' + tempvar);
 
-// // Q3
-// List<String> contLastNames = new List<String>('Smith', 'Jones');
-// List<Contact> contactIds = SOQL.getContactIds(List<String> contLastNames);
-// System.debug('contIds:'+contId);
+// Q3
+List<String> contLastNames = new List<String>{'Smith', 'Jones'};
+List<Contact> contactIds = SOQL.getContactIds();
+System.debug('contIds:'+contactIds);
 
 // Boolean m = Schema.sObjectType.Contact.fields.Name.isUpdateable();
 // System.debug(m);
